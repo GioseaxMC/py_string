@@ -419,5 +419,3 @@
 #  |      in the resulting dictionary, each character in x will be mapped to the
 #  |      character at the same position in y. If there is a third argument, it
 #  |      must be a string, whose characters will be mapped to None in the result.
-
-print("59834673".isde)

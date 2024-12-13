@@ -1,8 +1,6 @@
-#include <stdio.h>
 #include <iostream>
-#include <windows.h>
 
-#include "pystr.h"
+#include "lib/pystr.h"
 
 using namespace std;
 
