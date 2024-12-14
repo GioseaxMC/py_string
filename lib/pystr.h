@@ -26,7 +26,7 @@
 #define _range(number, var_name) (int var_name = 0; var_name<number; var_name++)
 #define _irange(number, var_name) (int var_name = number-1; var_name>=0; var_name--)
 
-#define assert(expression, prompt) \
+#define str_assert(expression, prompt) \
         ((expression) ? (void)0 : \
         (fprintf(stderr, "ERROR: %s\n", prompt), exit(-1)))
 
@@ -77,11 +77,11 @@ class str {
         if (idx == -1) {
             return length-1;
         }
-        assert(idx >= 0 and idx < length, "string index out of bounds");
+        str_assert(idx >= 0 and idx < length, "string index out of bounds");
         return idx;
     }
 
-    char& __at__(int idx) {
+    char& at(int idx) {
         return data[__proc_idx__(idx)];
     }
 
@@ -89,10 +89,6 @@ class str {
         capacity = next_powt(other.length);
         char* old_data = data;
         data = (char*) malloc(capacity*sizeof(char));
-        // for _range(other.length, idx) {
-        //     __at__(idx) = other.__at__(idx);
-        // }
-        // __at__(other.length) = 0;
         strcpy(data, other.data);
         length = other.length;
         free(old_data);
@@ -101,19 +97,6 @@ class str {
 
     str& __add__(str& other) {
         return __insert__(length, other.c_str());
-        // capacity = next_powt(length+other.length+2);
-        // char* old_data = data;
-        // data = (char*) malloc(capacity);
-        // for _range(length, idx) {
-        //     data[idx] = old_data[idx];
-        // }
-        // for _range(other.length, idx) {
-        //     data[length+idx] = other[idx];
-        // }
-        // data[length+other.length] = 0;
-        // length = length + other.length;
-        // free(old_data);
-        // return self;
     }
 
     str& __insert__(size_t _pos, const char* _new) {
@@ -141,11 +124,11 @@ class str {
     }
 
     str& __remove__(size_t _pos, size_t _len) {
-        assert(_len > 0, "length of remover must be more than 0");
-        assert(_len+_pos <= length, "removing out of range");
+        str_assert(_len > 0, "length of remover must be more than 0");
+        str_assert(_len+_pos <= length, "removing out of range");
         for _range(length-_pos-_len+1, idx) {
             if (_pos+idx+_len <= length) {
-                __at__(_pos+idx) = data[_pos+idx+_len];
+                at(_pos+idx) = data[_pos+idx+_len];
             }
         }
         length -= _len;
@@ -194,11 +177,11 @@ class str {
 
     // METHODS
 
-    char& operator[] (int idx) { return __at__(idx); }
+    char& operator[] (int idx) { return at(idx); }
 
     str operator[] (std::initializer_list<int> list) {
-        assert(list.size() >= 2, "expecting 2 arguments (start, end) but got less");
-        assert(list.size() <= 2, "expecting 2 arguments (start, end) but got more");
+        str_assert(list.size() >= 2, "expecting 2 arguments (start, end) but got less");
+        str_assert(list.size() <= 2, "expecting 2 arguments (start, end) but got more");
         return substr(*list.begin(), *(list.end()-1));
     }
 
@@ -317,7 +300,7 @@ class str {
         if (end < 0) { end = length + end; }
         str temp;
         for _range(end-start, idx) {
-            temp += __at__(idx+start);
+            temp += at(idx+start);
         }
         return temp;
     }
