@@ -5,6 +5,9 @@
 using namespace std;
 
 int main(void) {
-    str s1 = "Hello World!";
-    cout << s1.c_str() << endl;
+    string s1 = "Hello World!";
+
+    string s2 = $str(s1, upper,);
+
+    cout << s2 << endl;
 }

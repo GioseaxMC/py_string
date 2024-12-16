@@ -30,6 +30,8 @@
         ((expression) ? (void)0 : \
         (fprintf(stderr, "ERROR: %s\n", prompt), exit(-1)))
 
+#define $str(_string, _method, _args) str_to_string(string_to_str(_string)._method(_args))
+
 int floor(float x) {
     return int(x);
 }
@@ -103,18 +105,15 @@ class str {
         char* old_data = data;
         int new_len = strlen(_new);
         capacity = next_powt(length + strlen(_new));
-        // printf("new capacity: %i\n", capacity);
         data = (char*) malloc(capacity);
         int inserted = 0;
         for _range(length+1, idx) {
             if(idx == _pos) {
                 for _range(new_len, idy) {
                     data[idx+idy] = _new[idy];
-                    // printf("writing %c in position %i from_new %i\n", _new[idy], idx+idy, idy);
                     inserted++;
                 }
             }
-            // printf("writing %c in position %i from_old %i\n", old_data[idx], idx+inserted, idx);
             data[idx+inserted] = old_data[idx];
         }
         length += new_len;
@@ -185,7 +184,7 @@ class str {
         return substr(*list.begin(), *(list.end()-1));
     }
 
-    char* encode() { return data; }
+    const char* encode() { return data; }
     const char* c_str() { return data; }
     const char* _() { return data; }
     bool empty() { return !length; }
@@ -196,14 +195,11 @@ class str {
         int old_len = strlen(_old);
         int new_len = strlen(_new);
         char* result;
-        // printf("%i\n", result);
         int offset = 0;
         while ((result = strstr(temp.data + offset, _old)) != NULL) {
-            // printf("%i - starting from: %d - remaining: %s - incrementing by: %i\n", result, temp.data+offset, temp.data+offset, result - temp.data + new_len);
             temp.__remove__(result-temp.data, old_len);
             offset = result - temp.data + new_len;
             temp.__insert__(result-temp.data, _new);
-            // printf("%s\n", temp.data + offset);
         }
         return temp;
     }
@@ -270,7 +266,6 @@ class str {
         std::vector<str> vemp;
         str temp;
         for (char c : self) {
-            // printf("", c);
             if (c == chr) {
                 vemp.push_back(temp);
                 temp.clear();
@@ -475,11 +470,22 @@ class str {
             return str(self);
         }
     }
+    str removesuffix(const str& _str) { return removesuffix(_str.data); }
+
+    str removeprefix(const char* _str) {
+        int _len = strlen(_str);
+        int position = find(_str);
+        if (position == 0) {
+            return substr(_len, length);
+        } else {
+            return self;
+        }
+    }
+    str removeprefix(const str& _str) { return removeprefix(_str.data); }
 
     // OPERATORS
 
     str& operator= (const str& other) {
-        // printf("Checking validity: %s\n", other.data);
         __overwrite_self__(other);
         return self;
     }
@@ -512,7 +518,6 @@ class str {
         str temp = self;
         for _range(times-1, idx) {
             temp += self;
-            // printf("%s - %s // ", temp.c_str(), self.c_str());
         }
         return temp;
     }
@@ -553,4 +558,12 @@ template<typename T>
 T& operator<< (T& buffer, const str& self) {
     buffer << self.data;
     return buffer;
+}
+
+std::string str_to_string(str _str) {
+    return std::string(_str.data);
+}
+
+str string_to_str(std::string _str) {
+    return str(_str.c_str());
 }
